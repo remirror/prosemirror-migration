@@ -1,6 +1,5 @@
 import { isNumber } from "lodash";
-import type { RemirrorJSON } from "@remirror/core-types";
-import { migrateDoc } from "../demo/v1-task-list";
+import type { NodeType, RemirrorJSON, ProsemirrorNode } from "@remirror/core-types";
 
 /**
  * https://discuss.prosemirror.net/t/schema-versioning-and-migrations/321/2
@@ -18,10 +17,51 @@ import { migrateDoc } from "../demo/v1-task-list";
  *
  */
 
+export type NodeMigration = (content?: ProsemirrorNode[]) => ProsemirrorNode[] | undefined
+
+export type MigrationDefinition = Record<
+  NodeType,
+  (node: ProsemirrorNode, recurse: NodeMigration) => ProsemirrorNode | undefined
+>
+
 export type MigrationManifest = Record<
   number,
-  (doc: RemirrorJSON) => RemirrorJSON
+  MigrationDefinition
 >;
+
+function migrateNodes(
+  doc: RemirrorJSON,
+  migrationDef: MigrationDefinition
+): RemirrorJSON {
+  function migrateNode(
+    acc: ProsemirrorNode[],
+    node: ProsemirrorNode
+  ): ProsemirrorNode[] {
+    const migrateNodeArray: NodeMigration = (content?) => {
+      return content?.reduce(migrateNode, []);
+    };
+
+    const nodeTypeMigrator = migrationDef[node.type];
+    const modified = nodeTypeMigrator?.(node, migrateNodeArray);
+    if (modified) {
+      return acc.concat(modified);
+    }
+
+    if (node.content) {
+      return acc.concat({
+        ...node,
+        content: node.content.reduce(migrateNode, [])
+      });
+    }
+
+    return acc.concat(node);
+  }
+
+  return {
+    ...doc,
+    content: doc.content.reduce(migrateNode, [])
+  };
+}
 
 export function createMigrate(
   migrations: MigrationManifest,
@@ -59,7 +99,7 @@ export function createMigrate(
       console.log("prosemirror-migration: migrationKeys", migrationKeys);
     }
 
-    const migratedDoc = migrationKeys.reduce((state, versionKey) => {
+    return migrationKeys.reduce((state, versionKey) => {
       if (debug) {
         console.log(
           "prosemirror-migration: running migration for versionKey",
@@ -67,9 +107,11 @@ export function createMigrate(
         );
       }
 
-      return migrations[versionKey](state);
-    }, doc);
+      const { attrs = {} } = doc;
+      attrs.version = versionKey;
+      doc.attrs = attrs;
 
-    return migratedDoc;
+      return migrateNodes(doc, migrations[versionKey]);
+    }, doc);
   };
 }

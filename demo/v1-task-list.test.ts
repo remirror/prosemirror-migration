@@ -1,6 +1,6 @@
 import "jest"
-import {migrate} from './demo'
-import {migrateDoc} from './v1-task-list'
+import "jest-json"
+import { migrate } from "./demo";
 
 const TEST_HEADING = {
   type: 'heading',
@@ -270,11 +270,12 @@ describe('v0 => v1', () => {
       ],
     }
 
-    expect(migrate(oldJSON, 1)).toStrictEqual(newJSON)
+    const result = migrate(oldJSON, 1)
+    expect(JSON.stringify(result)).toMatchJSON(newJSON)
   })
 })
 
-describe('migrateDoc', () => {
+describe('migrate', () => {
   it('ignores regular list', () => {
     const input = {
       type: 'doc',
@@ -298,8 +299,8 @@ describe('migrateDoc', () => {
       ],
     }
 
-    const result = migrateDoc(input)
-    expect(result).toEqual(input)
+    const result = migrate(input, 1)
+    expect(JSON.stringify(result)).toMatchJSON(input)
   })
 
   it('breaks up mixed list into multiple lists', () => {
@@ -346,7 +347,7 @@ describe('migrateDoc', () => {
       ],
     }
 
-    const result = migrateDoc(input)
+    const result = migrate(input, 1)
     const types = result.content?.map((node) => node.type)
 
     expect(types).toEqual(['heading', 'bulletList', 'taskList', 'bulletList'])

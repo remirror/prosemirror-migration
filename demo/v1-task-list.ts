@@ -1,105 +1,65 @@
-import {flatten} from 'lodash'
-import {RemirrorJSON} from '@remirror/core-types'
-import {partitionArray} from './utils'
+import type { ProsemirrorNode } from "@remirror/core-types";
+import type { MigrationDefinition } from "../src";
 
-/**
- * Transfer a listItem node to a taskListItem node
- *
- * @param node The Prosemirror node. Ignore if it's not a listItem node.
- * @param forced If false, then the function will only transfer a listItem node with truthy attribute `hasCheckbox`.
- * @returns Transfered Prosemirror node.
- */
-function listItemToTaskListItem(node: RemirrorJSON, forced: boolean): RemirrorJSON {
-  if (node.type !== 'listItem') {
-    return node
-  }
+const groupListItems = (content: ProsemirrorNode[]): ProsemirrorNode[][] | undefined => {
+  if (content?.length < 1) return;
 
-  if (forced || node.attrs?.hasCheckbox) {
-    const attrs = {...node.attrs}
-    delete attrs['hasCheckbox']
-    delete attrs['closed']
-    delete attrs['nested']
-    attrs.checked = !!attrs.checked
-
-    return {
-      ...node,
-      attrs,
-      type: 'taskListItem',
+  return content.reduce((acc, node) => {
+    if (acc.length && acc[acc.length - 1][0].attrs.hasCheckbox === node.attrs.hasCheckbox) {
+      acc[acc.length - 1].push(node);
+    } else {
+      acc.push([node]);
     }
-  } else {
-    const attrs = node.attrs
-    if (attrs) {
-      delete attrs['hasCheckbox']
-      delete attrs['checked']
-    }
+    return acc;
+  }, []);
+}
 
-    return node
+const toTaskLists: MigrationDefinition = {
+  bulletList: ({ type, content, ...rest }, migrate) => {
+    const grouped = groupListItems(content);
+    return grouped?.map((group) => ({
+      type: group[0].attrs.hasCheckbox ? "taskList" : "bulletList",
+      content: migrate(content),
+      ...rest
+    }));
+  },
+  orderedList: ({ type, content, attrs = {}, ...rest }, migrate) => {
+    const { order, ...restAttrs } = attrs;
+    const taskListAttrs =  Object.keys(restAttrs).length ? restAttrs : undefined
+
+    const grouped = groupListItems(content);
+    return grouped?.map((group) => ({
+      type: group[0].attrs.hasCheckbox ? "taskList" : "orderedList",
+      attrs: group[0].attrs.hasCheckbox ? taskListAttrs : attrs,
+      content: migrate(content),
+      ...rest
+    }));
+  },
+  listItem: ({ type, content, attrs = {}, ...rest }, migrate) => {
+    const { hasCheckbox, checked, closed, nested, ...restAttrs } = attrs;
+    if (hasCheckbox) {
+      return {
+        type: "taskListItem",
+        content: migrate(content),
+        ...rest,
+        attrs: {
+          checked,
+          ...restAttrs
+        }
+      };
+    } else {
+      return {
+        type: "listItem",
+        content: migrate(content),
+        ...rest,
+        attrs: {
+          closed,
+          nested,
+          ...restAttrs
+        }
+      };
+    }
   }
 }
 
-/**
- * Transfer a bulletList/orderedList node to a taskList node if its children is a taskListItem node.
- *
- * @param node The Prosemirror node. Ignore if it's not a bulletList node or orderedList node.
- * @returns Transfered Prosemirror node.
- */
-export function listToTaskList(node: RemirrorJSON): RemirrorJSON[] {
-  if (node.type !== 'bulletList' && node.type !== 'orderedList') {
-    return [node]
-  }
-
-  const attrs = node.attrs
-  if (attrs) {
-    delete attrs['order']
-    if (Object.keys(attrs).length === 0) {
-      delete node.attrs
-    }
-  }
-
-  const partitions = partitionNodesByType(node.content ?? [])
-
-  const result = partitions.map((content) => {
-    const isTaskList = content[0].type === 'taskListItem'
-
-    return {
-      ...node,
-      type: isTaskList ? 'taskList' : node.type,
-      content,
-    }
-  })
-
-  return result
-}
-
-function partitionNodesByType(nodes: RemirrorJSON[]): RemirrorJSON[][] {
-  return partitionArray(nodes, (node) => node.type)
-}
-
-function migrateNodes(nodes: RemirrorJSON[]): RemirrorJSON[] {
-  // transfer the children (listItem) firstly and then transfer the parent (bulletList)
-  for (const node of nodes) {
-    if (node.content) {
-      node.content = migrateNodes(node.content)
-    }
-  }
-
-  let updatedNodes: RemirrorJSON[] = nodes.map((node) => {
-    return listItemToTaskListItem(node, false)
-  })
-
-  updatedNodes = flatten(
-    updatedNodes.map((node) => {
-      return listToTaskList(node)
-    }),
-  )
-
-  return updatedNodes
-}
-
-export function migrateDoc(node: RemirrorJSON): RemirrorJSON {
-  if (node.type !== 'doc') {
-    throw new Error('node must be a doc')
-  }
-
-  return migrateNodes([node])[0]
-}
+export default toTaskLists;
