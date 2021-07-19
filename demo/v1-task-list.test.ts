@@ -276,13 +276,41 @@ describe('v0 => v1', () => {
 })
 
 describe('migrate', () => {
-  it('ignores regular list', () => {
+  it('ignores regular bullet list', () => {
     const input = {
       type: 'doc',
       content: [
         TEST_HEADING,
         {
           type: 'bulletList',
+          content: [
+            {
+              type: 'listItem',
+              attrs: {},
+              content: [{type: 'paragraph', content: [{type: 'text', text: 'foo'}]}],
+            },
+            {
+              type: 'listItem',
+              attrs: {},
+              content: [{type: 'paragraph', content: [{type: 'text', text: 'bar'}]}],
+            },
+          ],
+        },
+      ],
+    }
+
+    const result = migrate(input, 1)
+    expect(JSON.stringify(result)).toMatchJSON(input)
+  })
+
+  it('ignores regular ordered list', () => {
+    const input = {
+      type: 'doc',
+      content: [
+        TEST_HEADING,
+        {
+          type: 'orderedList',
+          attrs: {order: 1},
           content: [
             {
               type: 'listItem',
@@ -351,5 +379,105 @@ describe('migrate', () => {
     const types = result.content?.map((node) => node.type)
 
     expect(types).toEqual(['heading', 'bulletList', 'taskList', 'bulletList'])
+  })
+
+  it('transforms nested list items with checkboxes to task lists', () => {
+    const input = {
+      type: 'doc',
+      content: [
+        TEST_HEADING,
+        {
+          type: 'bulletList',
+          content: [
+            {
+              type: 'listItem',
+              attrs: { hasCheckbox: false, checked: false },
+              content: [
+                {
+                  type: 'paragraph',
+                  content: [{type: 'text', text: 'foo'}]
+                },
+                {
+                  type: 'bulletList',
+                  content: [
+                    {
+                      type: 'listItem',
+                      attrs: { hasCheckbox: true, checked: true },
+                      content: [
+                        {
+                          type: 'paragraph',
+                          content: [{type: 'text', text: 'checked'}]
+                        }
+                      ],
+                    },
+                    {
+                      type: 'listItem',
+                      attrs: { hasCheckbox: true, checked: false },
+                      content: [
+                        {
+                          type: 'paragraph',
+                          content: [{type: 'text', text: 'unchecked'}]
+                        }
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }
+
+    const result = migrate(input, 1)
+    expect(JSON.stringify(result)).toMatchJSON({
+      type: 'doc',
+      attrs: {
+        version: 1,
+      },
+      content: [
+        TEST_HEADING,
+        {
+          type: 'bulletList',
+          content: [
+            {
+              type: 'listItem',
+              attrs: {},
+              content: [
+                {
+                  type: 'paragraph',
+                  content: [{type: 'text', text: 'foo'}]
+                },
+                {
+                  type: 'taskList',
+                  content: [
+                    {
+                      type: 'taskListItem',
+                      attrs: { checked: true },
+                      content: [
+                        {
+                          type: 'paragraph',
+                          content: [{type: 'text', text: 'checked'}]
+                        }
+                      ],
+                    },
+                    {
+                      type: 'taskListItem',
+                      attrs: { checked: false },
+                      content: [
+                        {
+                          type: 'paragraph',
+                          content: [{type: 'text', text: 'unchecked'}]
+                        }
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    })
   })
 })
