@@ -111,7 +111,7 @@ export function createMigrate(
       attrs.version = versionKey;
       doc.attrs = attrs;
 
-      return migrateNodes(doc, migrations[versionKey]);
+      return migrateNodes(state, migrations[versionKey]);
     }, doc);
   };
 }

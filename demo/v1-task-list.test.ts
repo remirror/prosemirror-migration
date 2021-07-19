@@ -275,7 +275,7 @@ describe('v0 => v1', () => {
   })
 })
 
-describe('migrate', () => {
+describe('migrate v1', () => {
   it('ignores regular bullet list', () => {
     const input = {
       type: 'doc',
