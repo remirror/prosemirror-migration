@@ -1,6 +1,7 @@
 {
   "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
+    "declaration": true,
     "outDir": "dist",
     "noEmit": true,
     "types": [
