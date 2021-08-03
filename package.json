@@ -2,18 +2,21 @@
   "name": "prosemirror-migration",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "tsc && jest",
+    "build": "tsc --noEmit false"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@remirror/core-types": "0.0.0-pr993.1",
+    "@remirror/core-types": "1.0.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@tsconfig/node14": "^1.0.1",
     "@types/jest": "^26.0.24",
+    "@types/lodash": "^4.14.172",
     "jest": "^27.0.6",
     "jest-json": "^1.0.4",
     "ts-jest": "^27.0.3",

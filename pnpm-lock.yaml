@@ -1,8 +1,10 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@remirror/core-types': 0.0.0-pr993.1
+  '@remirror/core-types': 1.0.1
+  '@tsconfig/node14': ^1.0.1
   '@types/jest': ^26.0.24
+  '@types/lodash': ^4.14.172
   jest: ^27.0.6
   jest-json: ^1.0.4
   lodash: ^4.17.21
@@ -10,11 +12,13 @@ specifiers:
   typescript: ^4.3.5
 
 dependencies:
-  '@remirror/core-types': 0.0.0-pr993.1
+  '@remirror/core-types': 1.0.1
   lodash: 4.17.21
 
 devDependencies:
+  '@tsconfig/node14': 1.0.1
   '@types/jest': 26.0.24
+  '@types/lodash': 4.14.172
   jest: 27.0.6
   jest-json: 1.0.4
   ts-jest: 27.0.3_jest@27.0.6+typescript@4.3.5
@@ -588,23 +592,23 @@ packages:
       chalk: 4.1.1
     dev: true
 
-  /@remirror/core-constants/0.0.0-pr993.1:
-    resolution: {integrity: sha512-ySFVP0XGYQy/Zvv5THcRs44pzN79j5z7bofscb6FTsZ6OZdEXC/f5gvJ2eecS+gy61a+QYffG/kJM7Op4G2iNQ==}
+  /@remirror/core-constants/1.0.0:
+    resolution: {integrity: sha512-iP+LryMocFtzmsTyG2/RXn1WTu3NPiB3R8qo0nEk74tqSIp2ZMoGUUL0TukoQ4EQT6nQKCfPddgTdLaWRrygpQ==}
     dependencies:
       '@babel/runtime': 7.14.6
     dev: false
 
-  /@remirror/core-types/0.0.0-pr993.1:
-    resolution: {integrity: sha512-izeugyCESrmOspCKHeawMkLU1ljL14pBJLhQ/wR2qR1wHNvJ98ICuNBh3aKvbmF1d5kq4PtDL/b6GImuhybxAA==}
+  /@remirror/core-types/1.0.1:
+    resolution: {integrity: sha512-rsdHkrnFComJzDLBZlW6BXVvemlxWitYMho/QlPfSrzJwsWuJKmdfXI2npIBiJ4oWAmHmESSR71Bq6O3+3kd4w==}
     peerDependencies:
-      '@remirror/pm': 0.0.0-pr993.1
+      '@remirror/pm': ^1.0.1
     dependencies:
-      '@remirror/core-constants': 0.0.0-pr993.1
-      '@remirror/types': 0.0.0-pr993.1
+      '@remirror/core-constants': 1.0.0
+      '@remirror/types': 0.1.0
     dev: false
 
-  /@remirror/types/0.0.0-pr993.1:
-    resolution: {integrity: sha512-+32+ulonGPjMJ9TsMlpKlEWW3G96Q+pm3u3C3eyd9ZVD+fLX1V8pdJPLLHVS4R478yfAa9fo9b84O/yhkZQAhQ==}
+  /@remirror/types/0.1.0:
+    resolution: {integrity: sha512-Ij75rakMbC83R4Ec5sPsQ95Nkre4V47HDQOxMzB0Tl0o3ExWICniCtsS0Y34vP4sQ0Anq7UpTWMcy+ykp0Uxaw==}
     dependencies:
       type-fest: 1.2.2
     dev: false
@@ -624,6 +628,10 @@ packages:
   /@tootallnate/once/1.1.2:
     resolution: {integrity: sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==}
     engines: {node: '>= 6'}
+    dev: true
+
+  /@tsconfig/node14/1.0.1:
+    resolution: {integrity: sha512-509r2+yARFfHHE7T6Puu2jjkoycftovhXRqW328PDXTVGKihlb1P8Z9mMZH04ebyajfRY7dedfGynlrFHJUQCg==}
     dev: true
 
   /@types/babel__core/7.1.15:
@@ -682,6 +690,10 @@ packages:
     dependencies:
       jest-diff: 26.6.2
       pretty-format: 26.6.2
+    dev: true
+
+  /@types/lodash/4.14.172:
+    resolution: {integrity: sha512-/BHF5HAx3em7/KkzVKm3LrsD6HZAXuXO1AJZQ3cRRBZj4oHZDviWPYu0aEplAqDFNHZPW6d3G7KN+ONcCCC7pw==}
     dev: true
 
   /@types/node/16.3.2:

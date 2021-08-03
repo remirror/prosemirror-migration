@@ -1,7 +1,7 @@
 import type { ProsemirrorNode } from "@remirror/core-types";
 import type { MigrationDefinition } from "../src";
 
-const emojiMap = {
+const emojiMap: Record<string, string> = {
   info: 'ℹ️',
   warning: '⚠️',
   error: '⛔️',

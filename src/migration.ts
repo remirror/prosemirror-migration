@@ -59,7 +59,7 @@ function migrateNodes(
 
   return {
     ...doc,
-    content: doc.content.reduce(migrateNode, [])
+    content: doc.content!.reduce(migrateNode, [])
   };
 }
 
