@@ -21,5 +21,9 @@
     "jest-json": "^1.0.4",
     "ts-jest": "^27.0.3",
     "typescript": "^4.3.5"
-  }
+  },
+  "files": [
+    "dist",
+    "tsconfig.json"
+  ]
 }
