@@ -19,7 +19,7 @@ const toTaskLists: MigrationDefinition = {
     const grouped = groupListItems(content);
     return grouped?.map((group) => ({
       type: group[0].attrs.hasCheckbox ? "taskList" : "bulletList",
-      content: migrate(content),
+      content: migrate(group),
       ...rest
     }));
   },
@@ -31,7 +31,7 @@ const toTaskLists: MigrationDefinition = {
     return grouped?.map((group) => ({
       type: group[0].attrs.hasCheckbox ? "taskList" : "orderedList",
       attrs: group[0].attrs.hasCheckbox ? taskListAttrs : attrs,
-      content: migrate(content),
+      content: migrate(group),
       ...rest
     }));
   },
