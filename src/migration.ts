@@ -1,4 +1,4 @@
-import { isNumber } from "lodash";
+import { isNumber, isString } from "lodash";
 import type { NodeType, RemirrorJSON, ProsemirrorNode } from "@remirror/core-types";
 
 /**
@@ -63,6 +63,26 @@ function migrateNodes(
   };
 }
 
+const NUMERIC_REGEX = /^\d+(?:\.\d+)?$/;
+
+function getInboundVersion (doc: RemirrorJSON) {
+  const version = doc.attrs?.version ?? 0;
+
+  if (isNumber(version)) {
+    return version;
+  }
+
+  if (isString(version)) {
+    const numberMatch = version.match(NUMERIC_REGEX);
+
+    if (numberMatch) {
+      return Number.parseFloat(numberMatch[0] as string);
+    }
+  }
+
+  return null;
+}
+
 export function createMigrate(
   migrations: MigrationManifest,
   config?: { debug: boolean }
@@ -70,12 +90,13 @@ export function createMigrate(
   const { debug } = config || {};
 
   return function (doc: RemirrorJSON, currentVersion: number): RemirrorJSON {
-    const inboundVersion = doc.attrs?.version ?? 0;
+    const inboundVersion = getInboundVersion(doc);
 
     if (!isNumber(inboundVersion)) {
       console.error(
-        "prosemirror-migration: `doc.attrs.version` must be a number, undefined or null"
+        "prosemirror-migration: `doc.attrs.version` must be a parseable number, undefined or null"
       );
+
       return doc;
     }
 
@@ -91,7 +112,7 @@ export function createMigrate(
     }
 
     const migrationKeys = Object.keys(migrations)
-      .map((ver) => parseInt(ver))
+      .map((ver) => parseFloat(ver))
       .filter((key) => currentVersion >= key && key > inboundVersion)
       .sort((a, b) => a - b);
 

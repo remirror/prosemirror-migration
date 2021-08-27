@@ -118,6 +118,43 @@ describe('v0 => v2', () => {
     const result = migrate(oldJSON, 2)
     expect(JSON.stringify(result)).toMatchJSON(newJSON)
   })
+
+  test('callout containing migrated checkbox (string version)', () => {
+    const oldJSON = {
+      type: 'doc',
+      attrs: {version: "1"},
+      content: [
+        TEST_HEADING,
+        {
+          type: 'callout',
+          attrs: {type: 'info'},
+          content: [
+            {
+              type: 'taskList',
+              content: [
+                {
+                  type: 'taskListItem',
+                  attrs: {checked: true},
+                  content: [
+                    {
+                      type: 'paragraph',
+                      content: [
+                        {type: 'text', text: 'a checked list item in a callout'},
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {type: 'paragraph'},
+      ],
+    }
+
+    const result = migrate(oldJSON, 2)
+    expect(JSON.stringify(result)).toMatchJSON(newJSON)
+  })
 })
 
 describe('v2 migrate', () => {
