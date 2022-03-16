@@ -1,7 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@remirror/core-types': 1.0.1
+  '@remirror/core-types': ~1.0.1
   '@tsconfig/node14': ^1.0.1
   '@types/jest': ^26.0.24
   '@types/lodash': ^4.14.172
@@ -1362,6 +1362,7 @@ packages:
     resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
+    requiresBuild: true
     dev: true
     optional: true
 
