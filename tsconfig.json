@@ -4,6 +4,7 @@
     "declaration": true,
     "outDir": "dist",
     "noEmit": true,
+    "target": "es5",
     "types": [
       "node",
       "jest"
