@@ -1,5 +1,5 @@
 import { isNumber, isString } from "lodash";
-import type { NodeType, RemirrorJSON, ProsemirrorNode } from "@remirror/core-types";
+import type { NodeType, RemirrorJSON } from "@remirror/core-types";
 
 /**
  * https://discuss.prosemirror.net/t/schema-versioning-and-migrations/321/2
@@ -17,11 +17,11 @@ import type { NodeType, RemirrorJSON, ProsemirrorNode } from "@remirror/core-typ
  *
  */
 
-export type NodeMigration = (content?: ProsemirrorNode[]) => ProsemirrorNode[] | undefined
+export type NodeMigration = (content?: RemirrorJSON[]) => RemirrorJSON[] | undefined
 
 export type MigrationDefinition = Record<
-  NodeType,
-  (node: ProsemirrorNode, recurse: NodeMigration) => ProsemirrorNode | undefined
+  string,
+  (node: RemirrorJSON, recurse: NodeMigration) => RemirrorJSON | RemirrorJSON[] | undefined
 >
 
 export type MigrationManifest = Record<
@@ -34,9 +34,9 @@ function migrateNodes(
   migrationDef: MigrationDefinition
 ): RemirrorJSON {
   function migrateNode(
-    acc: ProsemirrorNode[],
-    node: ProsemirrorNode
-  ): ProsemirrorNode[] {
+    acc: RemirrorJSON[],
+    node: RemirrorJSON
+  ): RemirrorJSON[] {
     const migrateNodeArray: NodeMigration = (content?) => {
       return content?.reduce(migrateNode, []);
     };

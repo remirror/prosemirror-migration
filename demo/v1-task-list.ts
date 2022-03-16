@@ -1,24 +1,25 @@
-import type { ProsemirrorNode } from "@remirror/core-types";
+import type { RemirrorJSON } from "@remirror/core-types";
 import type { MigrationDefinition } from "../src";
 
-const groupListItems = (content: ProsemirrorNode[]): ProsemirrorNode[][] | undefined => {
-  if (content?.length < 1) return;
+const groupListItems = (content?: RemirrorJSON[]): RemirrorJSON[][] | undefined => {
+  if (!content || content.length < 1) return;
 
+  const initial: RemirrorJSON[][] = []
   return content.reduce((acc, node) => {
-    if (acc.length && acc[acc.length - 1][0].attrs.hasCheckbox === node.attrs.hasCheckbox) {
+    if (acc.length && acc[acc.length - 1][0].attrs?.hasCheckbox === node.attrs?.hasCheckbox) {
       acc[acc.length - 1].push(node);
     } else {
       acc.push([node]);
     }
     return acc;
-  }, []);
+  }, initial);
 }
 
 const toTaskLists: MigrationDefinition = {
   bulletList: ({ type, content, ...rest }, migrate) => {
     const grouped = groupListItems(content);
     return grouped?.map((group) => ({
-      type: group[0].attrs.hasCheckbox ? "taskList" : "bulletList",
+      type: group[0].attrs?.hasCheckbox ? "taskList" : "bulletList",
       content: migrate(group),
       ...rest
     }));
@@ -29,8 +30,8 @@ const toTaskLists: MigrationDefinition = {
 
     const grouped = groupListItems(content);
     return grouped?.map((group) => ({
-      type: group[0].attrs.hasCheckbox ? "taskList" : "orderedList",
-      attrs: group[0].attrs.hasCheckbox ? taskListAttrs : attrs,
+      type: group[0].attrs?.hasCheckbox ? "taskList" : "orderedList",
+      attrs: group[0].attrs?.hasCheckbox ? taskListAttrs : attrs,
       content: migrate(group),
       ...rest
     }));
