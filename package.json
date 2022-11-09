@@ -8,7 +8,7 @@
     "build": "tsc --noEmit false"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@remirror/core-types": "~1.0.1",
     "lodash": "^4.17.21"
