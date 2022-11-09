@@ -1,6 +1,6 @@
 # prosemirror-migration
 
-_prosemirror-migration_ is a tool for migrating ProseMirror documents when you have breaking changes to your [document schema](https://prosemirror.net/docs/ref/#model.Document_Schema).
+_prosemirror-migration_ is a tool for migrating [ProseMirror][prosemirror] documents when you have breaking changes to your [document schema](https://prosemirror.net/docs/ref/#model.Document_Schema).
 
 It takes a **JSON encoded** ProseMirror document, and recursively descends through each node, executing a migration strategy for a node type.
 
@@ -105,7 +105,7 @@ As well as the `cite` attribute update, note the addition of a version attribute
 }
 ```
 
-So far, we have only migrated `blockquote` nodes, but it's likely you want to migrate other nodes too. 
+So far, we have only migrated `blockquote` nodes, but it's likely you want to migrate other nodes too.
 
 ### Migrating multiple node types
 
@@ -199,3 +199,14 @@ For instance if your manifest defines 5 versions, _prosemirror-migration_ skips 
 |          2          |     3, 4 and 5    |
 |          4          |         5         |
 |          5          | _&lt;nothing&gt;_ |
+
+## Contributing
+
+Please read our [contribution guide][contribution guide] for details on our code of conduct, and the process for submitting pull requests.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+
+[contribution guide]: https://remirror.io/docs/contributing
+[prosemirror]: https://prosemirror.net
